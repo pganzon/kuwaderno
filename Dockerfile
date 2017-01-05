@@ -78,7 +78,8 @@ RUN echo "ruser:notebookuser123" | chpasswd
 RUN pip install virtualenv
 
 WORKDIR /home/dockerenv
-COPY zeppelin-env.sh rpackages.R hosts ansible.cfg build_notebook.yml requirements.txt venv.sh  /home/dockerenv/
+COPY entrypoint.sh zeppelin-env.sh rpackages.R hosts ansible.cfg build_notebook.yml requirements.txt venv.sh  /home/dockerenv/
+RUN chmod -R +x /home/dockerenv
 RUN ./venv.sh
 RUN ansible-playbook build_notebook.yml
 
@@ -103,10 +104,7 @@ RUN mv zeppelin-env.sh /opt/zeppelin-0.6.1-bin-all/conf/zeppelin-env.sh
 
 RUN rm -f spark-2.0.2-bin-hadoop2.7.tgz hadoop-2.7.2.tar.gz  zeppelin-0.6.1-bin-all.tgz ansible.cfg  build_notebook.yml  hosts  requirements.txt  rpackages.R  rstudioserver.deb
 
-
 EXPOSE 7777 8787 8888
 VOLUME ["/jupyternb","/data"]
-COPY entrypoint.sh /home/dockerenv/
-RUN chmod -R +x /home/dockerenv
 ENTRYPOINT ["/home/dockerenv/entrypoint.sh"]
 CMD ["notebook"]
