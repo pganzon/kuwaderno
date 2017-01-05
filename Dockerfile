@@ -28,7 +28,7 @@ ENV ZEPPELIN_NOTEBOOK_DIR /jupyternb
 # R
 ENV RSTUDIO_URL https://download2.rstudio.org/rstudio-server-0.99.903-amd64.deb
 
-RUN useradd -m hdfs -G sudo -s /bin/bash
+RUN useradd -m ruser -G sudo -s /bin/bash
 
 
 RUN apt-get update  && \
