@@ -79,7 +79,6 @@ RUN pip install virtualenv
 
 WORKDIR /home/dockerenv
 COPY zeppelin-env.sh rpackages.R hosts ansible.cfg build_notebook.yml requirements.txt venv.sh  /home/dockerenv/
-RUN chmod -R +x /home/dockerenv
 RUN ./venv.sh
 RUN ansible-playbook build_notebook.yml
 
@@ -108,5 +107,6 @@ RUN rm -f spark-2.0.2-bin-hadoop2.7.tgz hadoop-2.7.2.tar.gz  zeppelin-0.6.1-bin-
 EXPOSE 7777 8787 8888
 VOLUME ["/jupyternb","/data"]
 COPY entrypoint.sh /home/dockerenv/
+RUN chmod -R +x /home/dockerenv
 ENTRYPOINT ["/home/dockerenv/entrypoint.sh"]
 CMD ["notebook"]
