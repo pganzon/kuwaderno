@@ -15,8 +15,6 @@ ENV PORT1 7777
 ENV PORT2 8888
 
 
-# HADOOP
-ENV HADOOP_URL http://apache.mirror.serversaustralia.com.au/hadoop/common/hadoop-2.7.2/hadoop-2.7.2.tar.gz
 ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
 
 # SPARK 
@@ -96,14 +94,12 @@ RUN wget $RSTUDIO_URL -O rstudioserver.deb
 RUN gdebi -n rstudioserver.deb
 
 
-RUN wget $HADOOP_URL
 RUN wget $SPARK_URL
 RUN wget $ZEPPELIN_URL
-RUN tar -xvf hadoop-2.7.2.tar.gz  -C /opt
 RUN tar -xvf $SPARK_VERSION.tgz  -C /opt
 RUN tar -xvf $ZEPPELIN_VERSION.tgz  -C /opt
 
-RUN rm -f venv.sh $SPARK_VERSION.tgz hadoop-2.7.2.tar.gz  $ZEPPELIN_VERSION.tgz ansible.cfg  build_mesos.yml  hosts  requirements.txt  rpackages.R  rstudioserver.deb
+RUN rm -f venv.sh $SPARK_VERSION.tgz $ZEPPELIN_VERSION.tgz ansible.cfg  build_mesos.yml  hosts  requirements.txt  rpackages.R  rstudioserver.deb
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["notebook"]
