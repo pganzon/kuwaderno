@@ -5,4 +5,3 @@ requests
 plotly
 cufflinks
 scipy
-influxdb
