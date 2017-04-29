@@ -7,25 +7,39 @@ To build the image, clone this repo and run code below.
 docker build -t kuwaderno .
 ```
 
+
 ## Using the Docker image
 Using bridge networking
 ```
 docker run  -d -p 8787:8787 -p 7777:7777  -p 8888:8888 kuwaderno
 ```
+
 or using host networking
+
+
 ```
 docker run  -d --net=host kuwaderno
 ```
-After the execution of the code above the following applications should now be accessible.
-
-* Rstudio Server  - http://ip.address:8787/
-* Jupyter         - http://ip.address:7777/
-* Apache Zeppelin - http://ip.address:8888/
 
 If you wish to change the port on host networking you can run the following instead.
 ```
 docker run -d -e PORT0=<rstudio.server.port> -e PORT1=<jupyter.port> -e PORT2=<zeppelin.port> --net=host kuwaderno
 ```
+
+After the execution of the code above the following applications should now be accessible.
+* Rstudio Server  - http://ip.address:8787/
+* Jupyter         - http://ip.address:7777/
+* Apache Zeppelin - http://ip.address:8888/
+
+Default user and password to access the url are as follows:
+* User: admin
+* Password: 14mR00t!
+
+You can change both of the user name and password by using the environment variables NB_USER and NB_USER_PASS. For example, if you want the user to be *user1* and *password1* then run the following:
+```
+docker run  -d -e NB_USER=user1 -e NB_USER_PASS=password1 --net=host kuwaderno
+```
+
 
 
 
@@ -67,6 +81,3 @@ docker run -d -e PORT0=<rstudio.server.port> -e PORT1=<jupyter.port> -e PORT2=<z
 1. plotly
 1. cufflinks
 1. scipy
-
-
-
