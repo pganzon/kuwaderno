@@ -7,6 +7,11 @@ To build the image, clone this repo and run code below.
 docker build -t kuwaderno .
 ```
 
+If you would not like to build this repository you can use the built image on docker hub.
+```
+docker run  -d -p 8787:8787 -p 7777:7777  -p 8888:8888 paulganzon/kuwaderno
+```
+
 
 ## Using the Docker image
 Using bridge networking
