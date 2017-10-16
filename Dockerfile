@@ -20,7 +20,7 @@ ENV ZEPPELIN_VERSION=zeppelin-0.7.1-bin-all \
 
 # URLS
 ENV SPARK_URL=http://d3kbcqa49mib13.cloudfront.net/$SPARK_VERSION.tgz \
-  ZEPPELIN_URL=http://apache.mirror.serversaustralia.com.au/zeppelin/zeppelin-0.7.1/$ZEPPELIN_VERSION.tgz \
+  ZEPPELIN_URL=http://archive.apache.org/dist/zeppelin/zeppelin-0.7.1/$ZEPPELIN_VERSION.tgz \
   RSTUDIO_URL=https://download2.rstudio.org/rstudio-server-1.0.143-amd64.deb
 
 # Java
