@@ -1,7 +1,7 @@
 FROM ubuntu:16.04
 MAINTAINER Paul Ganzon <paul.ganzon@gmail.com>
 
-LABEL "name"="Kuwaderno"
+LABEL "name"="Kuwaderno-lite"
 
 USER root
 
@@ -15,21 +15,11 @@ ENV PORT0=8787 \
   PORT2=8888
 
 # VERSIONS
-ENV ZEPPELIN_VERSION=zeppelin-0.7.1-bin-all \
-  SPARK_VERSION=spark-2.1.0-bin-hadoop2.7
+ENV ZEPPELIN_VERSION=zeppelin-0.7.1-bin-all
 
 # URLS
-ENV SPARK_URL=http://d3kbcqa49mib13.cloudfront.net/$SPARK_VERSION.tgz \
-  ZEPPELIN_URL=http://archive.apache.org/dist/zeppelin/zeppelin-0.7.1/$ZEPPELIN_VERSION.tgz \
+ENV ZEPPELIN_URL=http://archive.apache.org/dist/zeppelin/zeppelin-0.7.1/$ZEPPELIN_VERSION.tgz \
   RSTUDIO_URL=https://download2.rstudio.org/rstudio-server-1.0.143-amd64.deb
-
-# Java
-ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
-
-# SPARK 
-ENV SPARK_HOME=/opt/$SPARK_VERSION \
-  MESOS_NATIVE_JAVA_LIBRARY=/usr/local/lib/libmesos.so \
-  PYTHONPATH=/opt/$SPARK_VERSION/python:/opt/$SPARK_VERSION/python/lib/py4j-0.10.4-src.zip:$PYTHONPATH
 
 # JUPYTER
 ENV NOTEBOOK_HOME=/home/$NB_USER
@@ -38,11 +28,8 @@ ENV NOTEBOOK_HOME=/home/$NB_USER
 ENV ZEPPELIN_NOTEBOOK_DIR=/root \
   ZEPPELIN_HOME=/opt/$ZEPPELIN_VERSION
 
-# R
-
 # Install Prereqs
 RUN apt-get update  && apt-get -y install \
-  ansible \
   apt-transport-https \
   build-essential \
   gcc-4.9 \
@@ -66,16 +53,12 @@ RUN apt-get update  && apt-get -y install \
   software-properties-common \
   sudo \
   wget \
-  && apt-add-repository ppa:ansible/ansible
+  openjdk-8-jdk
 
 # Copy files
-COPY venv.sh entrypoint.sh hosts ansible.cfg build_mesos.yml requirements.txt rpackages.R /
-RUN chmod +x entrypoint.sh venv.sh
-
-# Install Mesos, oracle java and python packages
-RUN ansible-playbook build_mesos.yml \
-  && pip install virtualenv \
-  && /venv.sh
+COPY entrypoint.sh requirements.txt rpackages.R /
+RUN chmod +x entrypoint.sh \
+  && pip install -r requirements.txt
 
 # Install R
 RUN echo "deb https://cran.rstudio.com/bin/linux/ubuntu xenial/" | tee -a  /etc/apt/sources.list \
@@ -93,12 +76,10 @@ RUN echo "deb https://cran.rstudio.com/bin/linux/ubuntu xenial/" | tee -a  /etc/
   && gdebi -n rstudioserver.deb
 
 # Install zeppelin
-RUN wget $SPARK_URL \
-  && wget $ZEPPELIN_URL \
-  && tar -xvf $SPARK_VERSION.tgz  -C /opt \
+RUN wget $ZEPPELIN_URL \
   && tar -xvf $ZEPPELIN_VERSION.tgz  -C /opt
 
-RUN rm -rf venv.sh $SPARK_VERSION.tgz $ZEPPELIN_VERSION.tgz ansible.cfg  build_mesos.yml  hosts  requirements.txt  rpackages.R  rstudioserver.deb /var/lib/apt/lists/* /tmp/*
+RUN rm -rf $ZEPPELIN_VERSION.tgz requirements.txt  rpackages.R  rstudioserver.deb /var/lib/apt/lists/* /tmp/*
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["notebook"]

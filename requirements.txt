@@ -1,7 +1,2 @@
-ipython
+ipython==5.5.0
 jupyter
-pandas
-requests
-plotly
-cufflinks
-scipy
