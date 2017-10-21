@@ -16,8 +16,6 @@ build:   $(VARIDS)
 tag:     $(TAGS)
 release: $(RELEASES)
 clean:   $(CLEANS)
-login:
-	 @docker login -u "$(DOCKER_USER)" -p "$(DOCKER_PASS)"
 
 $(VARIANTS): 
 	docker run -it --rm -v "$(PWD)/$@/Dockerfile:/Dockerfile:ro" redcoolbeans/dockerlint
@@ -29,12 +27,13 @@ $(TAGS): tag-.%.id: $(VARIDS)
 	docker tag $(shell cat $<) $(DOCKER_IMAGE):$*
 
 $(RELEASES): rls-.%.id: $(VARIDS)
+	@docker login -u "$(DOCKER_USER)" -p "$(DOCKER_PASS)"
 	docker tag $(shell cat $<) $(DOCKER_IMAGE):$*
 	docker tag $(shell cat $<) $(DOCKER_IMAGE):$*-$(GIT_HASH)
 	docker push $(DOCKER_IMAGE):$*
 	docker push $(DOCKER_IMAGE):$*-$(GIT_HASH)
 
-$(CLEANS): cln-.%.id: .%.id
+$(CLEANS): cln-.%.id: $(VARIDS)
 	docker rmi -f $(shell cat $<)
 	rm -f .*.id
 
