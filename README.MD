@@ -17,7 +17,7 @@ If you would not like to build this repository you can use the built image on do
 docker run -d \
   -p 8787:8787 \
   -p 7777:7777 \
-  -p 80:80 
+  -p 80:80 \
 paulganzon/kuwaderno
 ```
 
@@ -37,7 +37,7 @@ docker run  -d \
   -e NB_USER_PASS=password1 \
   -p 8787:8787 \
   -p 7777:7777 \
-  -p 80:80 
+  -p 80:80 \
 paulganzon/kuwaderno
 ```
 
