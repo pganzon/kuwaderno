@@ -1,6 +1,6 @@
 DOCKER_IMAGE := kuwaderno
 DOCKER_REPO  := paulganzon
-VARIANTS     := latest
+VARIANTS     := latest mesos
 GIT_HASH     ?= $(shell git rev-parse --short HEAD)
 
 VARIDS       := $(patsubst %, .%.id,$(VARIANTS))

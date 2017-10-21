@@ -4,7 +4,7 @@ Docker image containing the following **Data Science** notebooks Jupyter, RStudi
 ## Building the Docker image.
 To build the image, clone this repo and run code below.
 ```
-docker build -t kuwaderno:mesos .
+docker build -t kuwaderno:mesos mesos
 ```
 
 If you would not like to build this repository you can use the built image on docker hub.
