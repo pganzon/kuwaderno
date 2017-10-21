@@ -31,7 +31,6 @@ $(RELEASES): rls-.%.id: $(VARIDS)
 	docker tag $(shell cat $<) $(DOCKER_REPO)/$(DOCKER_IMAGE):$*
 	docker tag $(shell cat $<) $(DOCKER_REPO)/$(DOCKER_IMAGE):$*-$(GIT_HASH)
 	docker push $(DOCKER_REPO)/$(DOCKER_IMAGE):$*
-	docker push $(DOCKER_REPO)/$(DOCKER_IMAGE):$*-$(GIT_HASH)
 
 $(CLEANS): cln-.%.id: $(VARIDS)
 	docker rmi -f $(shell cat $<)
