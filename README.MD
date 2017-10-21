@@ -1,4 +1,7 @@
 # Kuwaderno
+
+[![Build Status](https://travis-ci.org/pganzon/kuwaderno.svg?branch=master)](https://travis-ci.org/pganzon/kuwaderno)
+
 Docker image containing the following **Data Science** notebooks Jupyter, RStudio and Apache Zeppelin. This also contains  Apache Spark and Apache Mesos for Spark job submission locally or on a Mesos cluster.
 
 ## Building the Docker image.
