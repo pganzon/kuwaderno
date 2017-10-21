@@ -1,0 +1,83 @@
+---
+- name: Setup Prerequisite
+  hosts: localhost
+  vars:
+     javahome: /usr/lib/jvm/java-8-oracle
+     mesosversion: 1.1.0-2.0.107.ubuntu1604
+  tasks:
+      - name: Add Java 8  apt key
+        become: yes
+        apt_key: >
+           keyserver=hkp://keyserver.ubuntu.com:80
+           id=EEA14886
+      
+      - name: Add java 8 ppa to apt source list
+        become: yes
+        lineinfile: >
+           dest=/etc/apt/sources.list
+           line="{{ item }}"
+           insertafter=EOF
+        with_items: 
+           - "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main"
+           - "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main"
+      
+      - name: set licence oracle license
+        become: yes
+        debconf: >
+           name='oracle-java8-installer'
+           question='shared/accepted-oracle-license-v1-1'
+           value='true'
+           vtype='select'
+      
+      - name: Install Java 8
+        become: yes
+        apt: >
+           name={{ item }}
+           update_cache=yes
+           force=yes
+        with_items:
+           - oracle-java8-installer
+           - oracle-java8-set-default
+      
+      - name: Setup JAVA_HOME 
+        become: yes
+        lineinfile: >
+            dest=/etc/environment
+            line={{ item }}
+        with_items: 
+            - "JAVA_HOME={{ javahome }}"
+
+      - name: Add Mesosphere to Repository 
+        become: yes
+        apt_key: >
+               keyserver=hkp://keyserver.ubuntu.com:80
+               id=E56151BF
+      - shell: DISTRO=$(lsb_release -is | tr '[:upper:]' '[:lower:]'); CODENAME=$(lsb_release -cs); echo "deb http://repos.mesosphere.com/${DISTRO} ${CODENAME} main" > /etc/apt/sources.list.d/mesosphere.list
+        become: yes
+      
+      - name: Install Prereq
+        apt: >
+           name={{ item }}
+           force=yes
+           update_cache=yes
+        become: yes
+        with_items:
+                  - autoconf
+                  - libtool
+                  - build-essential
+                  - python-dev
+                  - python-boto
+                  - libcurl4-nss-dev
+                  - libsasl2-dev 
+                  - maven 
+                  - libapr1-dev 
+                  - libsvn-dev
+                  - git
+                  - python-pip
+      
+      - name: Install Mesos
+        apt: >
+           name="mesos={{ mesosversion }}"
+           update_cache=yes
+           force=yes
+        become: yes

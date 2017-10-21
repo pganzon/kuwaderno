@@ -1,0 +1,6 @@
+ipython==5.5.0
+jinja2
+jupyter
+matplotlib
+pandas
+sklearn

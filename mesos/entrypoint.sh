@@ -12,6 +12,7 @@ if [ "$1" = 'notebook' ]; then
     echo -e "#"'!'"/bin/bash\nset -e\nexport ZEPPELIN_PORT=$PORT2" > $ZEPPELIN_HOME/conf/zeppelin-env.sh
     $ZEPPELIN_HOME/bin/zeppelin-daemon.sh start &
 
+    source /venv/bin/activate
     mkdir -p $NOTEBOOK_HOME
     cd $NOTEBOOK_HOME
     

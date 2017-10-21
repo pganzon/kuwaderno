@@ -1,0 +1,38 @@
+upstream zeppelin {
+    server {{ ZEPPELIN_HOST }}:88;   # For security, It is highly recommended to make this address/port as non-public accessible
+}
+
+# Zeppelin Website
+server {
+    listen {{ ZEPPELIN_PORT }};
+    server_name {{ ZEPPELIN_SERVER_NAME }};    # for example: zeppelin.mycompany.com
+    {% if ZEPPELIN_CERT -%}
+    listen 443 ssl;                            # optional, to serve HTTPS connection
+
+    ssl_certificate {{ ZEPPELIN_CERT }};       # optional, to serve HTTPS connection
+    ssl_certificate_key {{ ZEPPELIN_KEY }};    # optional, to serve HTTPS connection
+
+    if ($ssl_protocol = "") {
+        rewrite ^ https://$host$request_uri? permanent;  # optional, to force use of HTTPS
+    }
+    {% endif %}
+
+    location / {    # For regular websever support
+        proxy_pass http://zeppelin;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-NginX-Proxy true;
+        proxy_redirect off;
+        auth_basic "Restricted";
+        auth_basic_user_file /etc/nginx/.htpasswd;
+    }
+
+    location /ws {  # For websocket support
+        proxy_pass http://zeppelin/ws;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade websocket;
+        proxy_set_header Connection upgrade;
+        proxy_read_timeout 86400;
+    }
+}
