@@ -1,4 +1,5 @@
 DOCKER_IMAGE := kuwaderno
+DOCKER_REPO  := paulganzon
 VARIANTS     := latest
 GIT_HASH     ?= $(shell git rev-parse --short HEAD)
 
@@ -9,7 +10,7 @@ CLEANS       := $(patsubst %, cln-.%.id,$(VARIANTS))
 
 .PHONY: build $(VARIANTS)
 
-local: lint  build tag
+local: lint build tag
 
 lint:    $(VARIANTS)
 build:   $(VARIDS)
@@ -24,14 +25,13 @@ $(VARIDS): .%.id:
 	docker build --no-cache --iidfile $@ $*
 
 $(TAGS): tag-.%.id: $(VARIDS)
-	docker tag $(shell cat $<) $(DOCKER_IMAGE):$*
+	docker tag $(shell cat $<) $(DOCKER_REPO)/$(DOCKER_IMAGE):$*
 
 $(RELEASES): rls-.%.id: $(VARIDS)
-	@docker login -u "$(DOCKER_USER)" -p "$(DOCKER_PASS)"
-	docker tag $(shell cat $<) $(DOCKER_IMAGE):$*
-	docker tag $(shell cat $<) $(DOCKER_IMAGE):$*-$(GIT_HASH)
-	docker push $(DOCKER_IMAGE):$*
-	docker push $(DOCKER_IMAGE):$*-$(GIT_HASH)
+	docker tag $(shell cat $<) $(DOCKER_REPO)/$(DOCKER_IMAGE):$*
+	docker tag $(shell cat $<) $(DOCKER_REPO)/$(DOCKER_IMAGE):$*-$(GIT_HASH)
+	docker push $(DOCKER_REPO)/$(DOCKER_IMAGE):$*
+	docker push $(DOCKER_REPO)/$(DOCKER_IMAGE):$*-$(GIT_HASH)
 
 $(CLEANS): cln-.%.id: $(VARIDS)
 	docker rmi -f $(shell cat $<)
