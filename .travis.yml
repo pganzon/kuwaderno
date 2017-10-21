@@ -13,6 +13,10 @@ before_install:
 
 script:
   - make lint build tag
-  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-  - make release
+
+after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+      docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+      make release
+    fi
 
