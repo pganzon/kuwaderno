@@ -4,6 +4,9 @@ set -e
 
 # Generate config
 function generateconfig() {
+  # Create dirs
+  mkdir -p ${NOTEBOOK_HOME} ${ZEPPELIN_NOTEBOOK_DIR} 
+  
   # Config nginx for Zeppelin
   echo "generating zeppelin-auth-setting..."
   local SITE_AVL_CONF=/etc/nginx/sites-available/zeppelin-auth-setting
@@ -18,15 +21,13 @@ function generateconfig() {
 
 generateconfig
 
-
 # Config & Run RStudio
 echo "www-port=$PORT0" >> /etc/rstudio/rserver.conf
 echo "server-app-armor-enabled=0" >> /etc/rstudio/rserver.conf 
 /usr/lib/rstudio-server/bin/rserver &
 
 #Config & Run Jupyter
-mkdir -p $NOTEBOOK_HOME
-cd $NOTEBOOK_HOME
+cd ${NOTEBOOK_HOME}
 export JPASS=`python -c "from notebook.auth import passwd; print passwd('$NB_USER_PASS')"`
 export JPASSCONF="c.NotebookApp.password = u'$JPASS'"
 jupyter notebook --allow-root --generate-config
@@ -34,5 +35,6 @@ echo "$JPASSCONF" >> ~/.jupyter/jupyter_notebook_config.py
 jupyter notebook --no-browser --port=$PORT1 --ip=0.0.0.0 --allow-root &
 
 # Run nginx and zeppelin
+echo "export ZEPPELIN_NOTEBOOK_DIR=${ZEPPELIN_NOTEBOOK_DIR}" >> ${ZEPPELIN_HOME}/conf/zeppelin-env.sh
 nginx -g "daemon off;" &
 ${ZEPPELIN_HOME}/bin/zeppelin.sh
