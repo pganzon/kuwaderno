@@ -7,7 +7,7 @@ USER root
 
 # URLS
 ARG ZEPPELIN_URL=http://apache.mirror.digitalpacific.com.au/zeppelin/zeppelin-0.7.3/zeppelin-0.7.3-bin-all.tgz
-ARG RSTUDIO_URL=https://download2.rstudio.org/rstudio-server-1.0.143-amd64.deb
+ARG RSTUDIO_URL=https://download2.rstudio.org/rstudio-server-1.1.383-amd64.deb
 ARG SPARK_URL=http://mirror.intergrid.com.au/apache/spark/spark-2.2.0/spark-2.2.0-bin-hadoop2.7.tgz
 
 ENV DEBIAN_FRONTEND=noninteractive \
