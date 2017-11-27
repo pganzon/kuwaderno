@@ -45,7 +45,7 @@ paulganzon/kuwaderno
 
 |Application|Version|
 | ------------- |-------------|
-| Rstudio Server | 1.0.143|
+| Rstudio Server | 1.1.383|
 | Jupyter        | 4.3.0|
 | Apache Zeppelin| 0.7.3|
 

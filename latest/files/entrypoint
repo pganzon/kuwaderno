@@ -4,9 +4,6 @@ set -e
 
 # Generate config
 function generateconfig() {
-  # Create dirs
-  mkdir -p ${NOTEBOOK_HOME} ${ZEPPELIN_NOTEBOOK_DIR} 
-  
   # Config nginx for Zeppelin
   echo "generating zeppelin-auth-setting..."
   local SITE_AVL_CONF=/etc/nginx/sites-available/zeppelin-auth-setting
@@ -17,6 +14,9 @@ function generateconfig() {
   # Configure user auth.
   htpasswd -b -c /etc/nginx/.htpasswd ${NB_USER} ${NB_USER_PASS}
   useradd -m ${NB_USER} -G sudo -s /bin/bash && echo "${NB_USER}:${NB_USER_PASS}" | chpasswd
+
+  # Create dirs
+  mkdir -p ${NOTEBOOK_HOME} ${ZEPPELIN_NOTEBOOK_DIR} 
 }
 
 generateconfig
