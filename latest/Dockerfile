@@ -5,6 +5,11 @@ LABEL "name"="Kuwaderno"
 
 USER root
 
+# URLS
+ARG ZEPPELIN_URL=http://apache.mirror.digitalpacific.com.au/zeppelin/zeppelin-0.7.3/zeppelin-0.7.3-bin-all.tgz
+ARG RSTUDIO_URL=https://download2.rstudio.org/rstudio-server-1.0.143-amd64.deb
+ARG SPARK_URL=http://mirror.intergrid.com.au/apache/spark/spark-2.2.0/spark-2.2.0-bin-hadoop2.7.tgz
+
 ENV DEBIAN_FRONTEND=noninteractive \
   TINI_VERSION=v0.16.1
 
@@ -17,15 +22,16 @@ ENV PORT0=8787 \
   PORT1=7777 \
   PORT2=8888
 
-# URLS
-ENV ZEPPELIN_URL=http://apache.mirror.digitalpacific.com.au/zeppelin/zeppelin-0.7.3/zeppelin-0.7.3-bin-all.tgz \
-  RSTUDIO_URL=https://download2.rstudio.org/rstudio-server-1.0.143-amd64.deb
+# SPARK
+ENV SPARK_HOME=/opt/spark-2.2.0-bin-hadoop2.7 \
+  SPARK_MASTER=local[*] \
+  PYTHONPATH=/opt/spark-2.2.0-bin-hadoop2.7/python:/opt/spark-2.2.0-bin-hadoop2.7/python/lib/py4j-0.10.4-src.zip:$PYTHONPATH
 
 # JUPYTER
-ENV NOTEBOOK_HOME=/home/$NB_USER
+ENV NOTEBOOK_HOME=/home/$NB_USER/jupyter
 
 # ZEPPELIN
-ENV ZEPPELIN_NOTEBOOK_DIR=/root \
+ENV ZEPPELIN_NOTEBOOK_DIR=/home/$NB_USER/zeppelin \
   ZEPPELIN_HOME=/opt/zeppelin-0.7.3-bin-all \
   ZEPPELIN_HOST=127.0.0.1 \
   ZEPPELIN_PORT=80 \
@@ -64,10 +70,12 @@ RUN apt-get update  && apt-get -y install \
   sudo \
   wget \
   openjdk-8-jdk \
-  && chmod +x /tini
+  && chmod +x /tini \
+  && rm -rf /var/lib/apt/lists/*
 
 # Install Python packages.
-RUN pip install -r /tmp/requirements.txt
+RUN pip install -r /tmp/requirements.txt \
+  && rm -f /tmp/requirements.txt
 
 # Install R
 RUN echo "deb https://cran.rstudio.com/bin/linux/ubuntu xenial/" | tee -a  /etc/apt/sources.list \
@@ -82,18 +90,27 @@ RUN echo "deb https://cran.rstudio.com/bin/linux/ubuntu xenial/" | tee -a  /etc/
   && Rscript /tmp/rpackages.R \
   ## Install RStudio
   && wget $RSTUDIO_URL -O rstudioserver.deb \
-  && gdebi -n rstudioserver.deb
+  && gdebi -n rstudioserver.deb \
+  && rm -rf rstudioserver.deb /tmp/rpackages.R /var/lib/apt/lists/*
+
+# Install Spark
+Run curl -fsS -o /tmp/spark.tgz ${SPARK_URL} \
+  && tar -xvf /tmp/spark.tgz  -C /opt \
+  && rm -rf /tmp/spark.tgz
 
 # Install Zeppelin
 RUN curl -fsS -o /tmp/zeppelin.tgz ${ZEPPELIN_URL} \
   && tar -xvf /tmp/zeppelin.tgz -C /opt \
-  && echo "#"'!'"/bin/bash\nset -e\nexport ZEPPELIN_PORT=88" > $ZEPPELIN_HOME/conf/zeppelin-env.sh \
+  && printf '#!/bin/bash\n%s\n%s\n%s\n' \
+            'set -e' \
+            'export ZEPPELIN_PORT=88' \
+            "export SPARK_HOME=${SPARK_HOME}" > ${ZEPPELIN_HOME}/conf/zeppelin-env.sh \
   && mv /tmp/templates / \
   && mv /tmp/entrypoint / \
   && mv /tmp/generate_config.py /generate_config.py \
-  && rm -rf /tmp/* /var/lib/apt/lists/*
+  && rm -rf /tmp/*
 
-RUN rm -rf $ZEPPELIN_VERSION.tgz requirements.txt  rpackages.R  rstudioserver.deb /var/lib/apt/lists/* /tmp/*
+EXPOSE 8787 7777 80
 
 ENTRYPOINT ["/tini", "--"]
 CMD ["/entrypoint"]
